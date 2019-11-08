@@ -1,68 +1,36 @@
-package main.java.models;
+package models;
 
-import java.util.Objects;
+import lombok.*;
 
-class Role {
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-    private long id;
+@Entity
+@Table(name = "Role")
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
+public class Role implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "duties")
     private String duties;
 
-    public Role() {
+    @OneToMany(mappedBy = "role", orphanRemoval = true)
+    private List<User> list = new ArrayList<>();
 
-    }
-
-    public Role(long id, String name, String duties) {
-        this.id = id;
+    public Role(String name, String duties) {
         this.name = name;
         this.duties = duties;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDuties() {
-        return duties;
-    }
-
-    public void setDuties(String duties) {
-        this.duties = duties;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Role)) return false;
-        Role role = (Role) o;
-        return getId() == role.getId() &&
-                getName().equals(role.getName()) &&
-                getDuties().equals(role.getDuties());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getDuties());
-    }
-
-    @Override
-    public String toString() {
-        return "Role{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", duties='" + duties + '\'' +
-                '}';
     }
 }

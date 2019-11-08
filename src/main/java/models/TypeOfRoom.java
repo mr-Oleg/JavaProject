@@ -1,67 +1,32 @@
-package main.java.models;
+package models;
 
-import java.util.Objects;
+import javax.persistence.*;
+import lombok.*;
 
-class TypeOfRoom {
-    private long id;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "TypeOfRoom")
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode
+@ToString
+public class TypeOfRoom implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Column(name = "contribution")
     private int contribution;
+
+    @Column(name = "description")
     private String description;
 
-    public TypeOfRoom() {
+    @OneToMany(mappedBy = "tor", orphanRemoval = true)
+    private List<Room> rooms = new ArrayList<>();
 
-    }
-
-    public TypeOfRoom(long id, int contribution, String description) {
-        this.id = id;
-        this.contribution = contribution;
-        this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public int getContribution() {
-        return contribution;
-    }
-
-    public void setContribution(int contribution) {
-        this.contribution = contribution;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof TypeOfRoom)) return false;
-        TypeOfRoom that = (TypeOfRoom) o;
-        return getId() == that.getId() &&
-                getContribution() == that.getContribution() &&
-                getDescription().equals(that.getDescription());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getContribution(), getDescription());
-    }
-
-    @Override
-    public String toString() {
-        return "TypeOfRoom{" +
-                "id=" + id +
-                ", contribution=" + contribution +
-                ", description='" + description + '\'' +
-                '}';
-    }
 }
