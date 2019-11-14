@@ -1,10 +1,10 @@
 package utils;
 
-import models.*;
+import casino.models.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
-
+@Deprecated
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
 
