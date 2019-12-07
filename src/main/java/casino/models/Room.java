@@ -1,6 +1,4 @@
 package casino.models;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
@@ -25,18 +23,21 @@ public class Room implements Serializable {
     private String title;
     private double budget;
     private int userAmount;
-    @ManyToMany/*(cascade = {CascadeType.ALL})*/
-    @JoinTable(name = "UserSet" ,joinColumns = @JoinColumn(name = "room_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @ManyToMany
+    @JoinTable(
+            name = "UserSet",
+            joinColumns = {@JoinColumn(name = "room_id")},
+            inverseJoinColumns = {@JoinColumn(name = "user_id")})
     private Set<User> userSet = new HashSet<User>();
-    @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     @JoinColumn(name = "TypeOfRoom")
     private TypeOfRoom tor;
-    public void addUser(User user){
+
+    public void addUser(User user) {
         userSet.add(user);
     }
 
-    public void removeUser(User user){
+    public void removeUser(User user) {
         userSet.remove(user);
     }
 }

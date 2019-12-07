@@ -30,5 +30,7 @@ public class TypeOfRoom implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "tor", orphanRemoval = true)
     private List<Room> rooms = new ArrayList<>();
-
+    @JsonIgnore
+    @OneToMany(mappedBy = "typeOfRoom", orphanRemoval = true)
+    private List<HistoryRoom> historyRooms = new ArrayList<>();
 }

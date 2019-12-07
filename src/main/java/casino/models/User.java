@@ -2,23 +2,23 @@ package casino.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "User")
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
-@ToString
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User implements Serializable {
+public class User implements Serializable, UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,8 @@ public class User implements Serializable {
     private String lastName;
     private String login;
     private String password;
+    @Transient
+    private String passwordConfirm;
     private String email;
     private LocalDate dateOfBirth;
     private LocalDate dateOfSignUp;
@@ -34,12 +36,23 @@ public class User implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER,cascade = {CascadeType.ALL})
     @JoinColumn(name = "role")
     private Role role;
-    @ManyToMany(mappedBy = "bonusUser",cascade = {CascadeType.ALL})
+    @JsonIgnore
+    @OneToMany(mappedBy = "winner", orphanRemoval = true)
+    private List<HistoryRoom> historyRooms1 = new ArrayList<>();
+    @ManyToMany(
+            mappedBy = "bonusUser",
+            cascade = {CascadeType.ALL})
     private Set<BonusPolicies> bonusPoliciesSet = new HashSet<BonusPolicies>();
     @JsonIgnore
-    @ManyToMany(mappedBy = "userSet",cascade = {CascadeType.ALL})
+    @ManyToMany(
+            mappedBy = "userSet",
+            cascade = {CascadeType.ALL})
     private Set<Room> roomSet = new HashSet<Room>();
-
+    @JsonIgnore
+    @ManyToMany(
+            mappedBy = "userSet",
+            cascade = {CascadeType.ALL})
+    private Set<HistoryRoom> historyRooms = new HashSet<HistoryRoom>();
     public User(String firstName, String lastName, String login, String password, String email, LocalDate dateOfBirth, LocalDate dateOfSignUp, double balance, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -54,5 +67,103 @@ public class User implements Serializable {
 
     public void addRoom(Room r){
         roomSet.add(r);
+    }
+
+    public void removeRoom(Room r){
+        roomSet.remove(r);
+    }
+
+    public void addHistoryRoom(HistoryRoom r){
+        historyRooms.add(r);
+    }
+
+    public void removeHistoryRoom(HistoryRoom r){
+        historyRooms.remove(r);
+    }
+
+    public void addBonusPolicy(BonusPolicies bp){
+        bonusPoliciesSet.add(bp);
+    }
+
+    public void removeBonusPolicy(BonusPolicies bp){
+        bonusPoliciesSet.remove(bp);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return getId() == user.getId() &&
+                Double.compare(user.getBalance(), getBalance()) == 0 &&
+                getFirstName().equals(user.getFirstName()) &&
+                getLastName().equals(user.getLastName()) &&
+                getLogin().equals(user.getLogin()) &&
+                getPassword().equals(user.getPassword()) &&
+                getPasswordConfirm().equals(user.getPasswordConfirm()) &&
+                getEmail().equals(user.getEmail()) &&
+                getDateOfBirth().equals(user.getDateOfBirth()) &&
+                getDateOfSignUp().equals(user.getDateOfSignUp()) &&
+                getRole().equals(user.getRole()) &&
+                getHistoryRooms1().equals(user.getHistoryRooms1()) &&
+                getBonusPoliciesSet().equals(user.getBonusPoliciesSet()) &&
+                getRoomSet().equals(user.getRoomSet()) &&
+                getHistoryRooms().equals(user.getHistoryRooms());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getFirstName(), getLastName(), getLogin(), getPassword(), getPasswordConfirm(), getEmail(), getDateOfBirth(), getDateOfSignUp(), getBalance(), getRole(), getHistoryRooms1(), getBonusPoliciesSet(), getRoomSet(), getHistoryRooms());
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", login='" + login + '\'' +
+                ", password='" + password + '\'' +
+                ", passwordConfirm='" + passwordConfirm + '\'' +
+                ", email='" + email + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", dateOfSignUp=" + dateOfSignUp +
+                ", balance=" + balance +
+                ", role=" + role +
+                ", bonusPoliciesSet=" + bonusPoliciesSet +
+                ", roomSet=" + roomSet +
+                '}';
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        Set set = new HashSet();
+        set.add(role);
+        return set;
+    }
+
+    @Override
+    public String getUsername() {
+        return login;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

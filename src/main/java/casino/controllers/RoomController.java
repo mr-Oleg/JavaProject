@@ -1,11 +1,13 @@
 package casino.controllers;
 
 import casino.models.Room;
-import casino.models.User;
 import casino.services.interfaces.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/demo/rooms")
@@ -13,24 +15,23 @@ public class RoomController {
     @Autowired
     private RoomService service;
 
-    @PostMapping(path = "/save")
+    @PostMapping("/save")
     public @ResponseBody
-    String save(
-            @RequestBody Room r) {
-        return service.save(r);
+    String save(@RequestBody Room room) {
+        return service.save(room);
     }
 
-    @PostMapping("/add/{id}")
-    public @ResponseBody
-    String addUser(
-            @RequestBody User u,@PathVariable Integer id) {
-        return service.add(u,id);
-    }
-
-    @GetMapping(path = "/show")
+    /*@GetMapping(path = "/show")
     public @ResponseBody
     Iterable<Room> getAll() {
         return service.findAll();
+    }*/
+
+    @GetMapping(path = "/show")
+    public String getAll(Model model) {
+        List<Room> rooms = (List<Room>)service.findAll();
+        model.addAttribute("rooms",rooms);
+        return "rooms";
     }
 
     @DeleteMapping(value = "/delete/{id}")
@@ -44,5 +45,17 @@ public class RoomController {
     public @ResponseBody
     String update(@RequestBody Room r, @PathVariable Integer id) {
         return service.update(r, id);
+    }
+
+    @GetMapping("/attach")
+    public @ResponseBody
+    String attach(@RequestParam(name = "roomID") Integer rID, @RequestParam(name = "userID") Integer uID) {
+        return service.addUser(rID, uID);
+    }
+
+    @PostMapping("/play")
+    public @ResponseBody
+    String play(@RequestParam(name = "roomID") Integer rID) {
+        return service.play(rID);
     }
 }

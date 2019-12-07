@@ -4,7 +4,10 @@ import casino.models.Role;
 import casino.services.interfaces.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(path = "/demo/roles")
@@ -19,10 +22,17 @@ public class RoleController {
         return service.save(role);
     }
 
+//    @GetMapping(path = "/show")
+//    public @ResponseBody
+//    Iterable<Role> getAll() {
+//        return service.findAll();
+//    }
+
     @GetMapping(path = "/show")
-    public @ResponseBody
-    Iterable<Role> getAll() {
-        return service.findAll();
+    public String getAll(Model model) {
+        List<Role> roles = (List<Role>)service.findAll();
+        model.addAttribute("roles",roles);
+        return "roles";
     }
 
     @DeleteMapping(value = "/delete/{id}")
