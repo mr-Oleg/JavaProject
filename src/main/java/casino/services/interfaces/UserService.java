@@ -8,4 +8,5 @@ public interface UserService {
     String update(User u,Integer id);
     String delete(Integer value);
     Iterable<User> findAll();
+    User findByLogin(String login);
 }
