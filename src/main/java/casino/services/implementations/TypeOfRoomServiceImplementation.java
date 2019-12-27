@@ -5,6 +5,9 @@ import casino.repositories.TypeOfRoomRepository;
 import casino.services.interfaces.TypeOfRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TypeOfRoomServiceImplementation implements TypeOfRoomService {
 
     @Autowired
@@ -12,40 +15,36 @@ public class TypeOfRoomServiceImplementation implements TypeOfRoomService {
 
     @Override
     public String save(TypeOfRoom tor) {
-        if(typeOfRoomRepository.save(tor)!=null){
+        if (typeOfRoomRepository.save(tor) != null) {
             return "Saved";
         }
         return "Error!";
     }
 
     @Override
-    public String update(TypeOfRoom tor,Integer id) {
-        Iterable<TypeOfRoom> types = typeOfRoomRepository.findAll();
-        for(TypeOfRoom b : types){
-            if(b.getId() == id){
-                b.setContribution(tor.getContribution());
-                b.setDescription(tor.getDescription());
-                typeOfRoomRepository.save(b);
-                return "Updated";
-            }
-        }
-        return "Not found";
+    public void deleteById(int id) {
+        typeOfRoomRepository.deleteById(id);
     }
 
     @Override
-    public String delete(Integer id) {
-        Iterable<TypeOfRoom> types = typeOfRoomRepository.findAll();
-        for (TypeOfRoom u : types) {
-            if (u.getId() == id) {
-                typeOfRoomRepository.delete(u);
-                return "Deleted";
-            }
-        }
-        return "Not found";
+    public List<TypeOfRoom> findAll() {
+        List<TypeOfRoom> result = new ArrayList<>();
+        typeOfRoomRepository.findAll().forEach(result::add);
+        return result;
+    }
+
+    public TypeOfRoom findById(int bet) {
+        return typeOfRoomRepository.findTypeOfRoomById(bet);
     }
 
     @Override
-    public Iterable<TypeOfRoom> findAll() {
-        return typeOfRoomRepository.findAll();
+    public void addType(int bet, String description) {
+        TypeOfRoom nonTargetType = typeOfRoomRepository.findTypeOfRoomByContribution(bet);
+        if (nonTargetType == null && bet > 0) {
+            TypeOfRoom typeOfRoom = new TypeOfRoom();
+            typeOfRoom.setDescription(description);
+            typeOfRoom.setContribution(bet);
+            typeOfRoomRepository.save(typeOfRoom);
+        }
     }
 }

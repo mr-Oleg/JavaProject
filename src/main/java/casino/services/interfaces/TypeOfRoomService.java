@@ -4,7 +4,12 @@ import casino.models.TypeOfRoom;
 
 public interface TypeOfRoomService {
     String save(TypeOfRoom tor);
-    String update(TypeOfRoom tor,Integer id);
-    String delete(Integer id);
+
+    void deleteById(int id);
+
     Iterable<TypeOfRoom> findAll();
+
+    TypeOfRoom findById(int id);
+
+    void addType(int bet, String description);
 }
